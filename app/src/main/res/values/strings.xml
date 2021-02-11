@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">hellomessenger</string>
+    <string name="app_name">Hello Messenger</string>
+    <string name="sign_out">Выйти</string>
 </resources>

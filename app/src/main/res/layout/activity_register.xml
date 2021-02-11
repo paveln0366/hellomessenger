@@ -48,12 +48,13 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
         android:text="Регистрация"
-        app:layout_constraintBottom_toTopOf="@+id/textViewRegister"
+        android:onClick="onClickRegister"
+        app:layout_constraintBottom_toTopOf="@+id/textViewHaveAnAccount"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textViewRegister"
+        android:id="@+id/textViewHaveAnAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
