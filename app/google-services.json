@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "154430207899",
+    "project_id": "hellomessenger-71779",
+    "storage_bucket": "hellomessenger-71779.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:154430207899:android:b2f5c6d924522e55d2933e",
+        "android_client_info": {
+          "package_name": "com.pavelpotapov.hellomessenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "154430207899-9murouetpibvvlm0ehaeofqtna6h1r0l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pavelpotapov.hellomessenger",
+            "certificate_hash": "9021917b4f4fd6acfd64b7df3252c4e0ed118136"
+          }
+        },
+        {
+          "client_id": "154430207899-cijs2bk9u7td5ic0bdq6khg8uiglgnng.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCteSN-w4Csbc52kdA4Sz0zHf_4-yGgB64"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "154430207899-cijs2bk9u7td5ic0bdq6khg8uiglgnng.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
