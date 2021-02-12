@@ -29,6 +29,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_GET_IMAGE = 101;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+    private FirebaseStorage storage;
+    private StorageReference reference;
 
     private RecyclerView recyclerViewMessages;
     private MessagesAdapter adapter;
@@ -70,7 +74,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        reference = storage.getReference();
+//        StorageReference referenceToImages = storageRef.child("images");
         recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
         adapter = new MessagesAdapter();
         editTextMessage = findViewById(R.id.editTextMessage);
@@ -152,7 +159,8 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 Uri uri = data.getData();
                 if (uri != null) {
-                    Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
+                    StorageReference referenceToImages = reference.child("images/" + uri.getLastPathSegment());
+                    referenceToImages.putFile(uri);
                 }
             }
         }
