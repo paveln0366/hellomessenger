@@ -3,6 +3,7 @@ package com.pavelpotapov.hellomessenger;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.Arrays;
 import java.util.List;
@@ -159,8 +162,31 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 Uri uri = data.getData();
                 if (uri != null) {
-                    StorageReference referenceToImages = reference.child("images/" + uri.getLastPathSegment());
-                    referenceToImages.putFile(uri);
+                    final StorageReference referenceToImages = reference.child("images/" + uri.getLastPathSegment());
+                    referenceToImages.putFile(uri)
+                            .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                @Override
+                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                    if (!task.isSuccessful()) {
+                                        throw task.getException();
+                                    }
+
+                                    // Continue with the task to get the download URL
+                                    return referenceToImages.getDownloadUrl();
+                                }
+                            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            if (task.isSuccessful()) {
+                                Uri downloadUri = task.getResult();
+                                if (downloadUri != null) {
+                                    Log.i("UrlTest", downloadUri.toString());
+                                }
+                            } else {
+
+                            }
+                        }
+                    });
                 }
             }
         }
@@ -182,8 +208,8 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
                 }
             }
-            }
         }
+    }
 
     private void signOut() {
         AuthUI.getInstance()
