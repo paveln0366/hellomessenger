@@ -1,6 +1,7 @@
 package com.pavelpotapov.hellomessenger;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +36,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 100;
+    private static final int RC_GET_IMAGE = 101;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText editTextMessage;
     private ImageView imageViewSendMessage;
+    private ImageView imageViewAddImage;
 
     private String author;
 
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new MessagesAdapter();
         editTextMessage = findViewById(R.id.editTextMessage);
         imageViewSendMessage = findViewById(R.id.imageViewSendMessage);
+        imageViewAddImage = findViewById(R.id.imageViewAddImage);
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewMessages.setAdapter(adapter);
         author = "Павел";
@@ -80,6 +84,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 sendMessage();
+            }
+        });
+
+        imageViewAddImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/jpeg");
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(intent, RC_GET_IMAGE);
             }
         });
 
@@ -113,8 +127,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    protected void onResume() {
+        super.onResume();
 
         // If the database has changed
         db.collection("messages").orderBy("date").addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -133,6 +147,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_GET_IMAGE && resultCode == RESULT_OK) {
+            if (data != null) {
+                Uri uri = data.getData();
+                if (uri != null) {
+                    Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
