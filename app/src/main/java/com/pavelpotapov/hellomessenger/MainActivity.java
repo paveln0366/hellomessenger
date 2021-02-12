@@ -83,19 +83,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // If the database has changed
-        db.collection("messages").orderBy("date").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                // value - list of all documents
-                if (value != null) {
-                    List<Message> messages = value.toObjects(Message.class);
-                    adapter.setMessages(messages);
-                    recyclerViewMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
-                }
-            }
-        });
-
         if (mAuth.getCurrentUser() != null) {
             Toast.makeText(this, "Logged", Toast.LENGTH_SHORT).show();
         } else {
@@ -126,6 +113,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        // If the database has changed
+        db.collection("messages").orderBy("date").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                // value - list of all documents
+                if (value != null) {
+                    List<Message> messages = value.toObjects(Message.class);
+                    adapter.setMessages(messages);
+                    recyclerViewMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
+                }
+            }
+        });
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
@@ -136,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser user = mAuth.getCurrentUser();
                 if (user != null) {
                     Toast.makeText(this, user.getEmail(), Toast.LENGTH_SHORT).show();
+                    author = user.getEmail();
                 }
             } else {
                 if (response != null) {
