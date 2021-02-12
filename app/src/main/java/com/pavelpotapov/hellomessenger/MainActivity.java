@@ -80,12 +80,12 @@ public class MainActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
         reference = storage.getReference();
-//        StorageReference referenceToImages = storageRef.child("images");
+
         recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
-        adapter = new MessagesAdapter();
         editTextMessage = findViewById(R.id.editTextMessage);
         imageViewSendMessage = findViewById(R.id.imageViewSendMessage);
         imageViewAddImage = findViewById(R.id.imageViewAddImage);
+        adapter = new MessagesAdapter();
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewMessages.setAdapter(adapter);
         author = "Павел";
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         imageViewSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendMessage();
+                sendMessage(editTextMessage.getText().toString().trim(), null);
             }
         });
 
@@ -114,26 +114,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void sendMessage() {
-        String textOfMessage = editTextMessage.getText().toString().trim();
-
-        if (!textOfMessage.isEmpty()) {
-            recyclerViewMessages.scrollToPosition(adapter.getItemCount() - 1);
-            db.collection("messages")
-                    .add(new Message(author, textOfMessage, System.currentTimeMillis()))
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            editTextMessage.setText("");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(MainActivity.this, "Сообщение не отправлено", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+    private void sendMessage(String textOfMessage, String urlToImage) {
+        Message message = null;
+        if (textOfMessage != null && !textOfMessage.isEmpty()) {
+            message = new Message(author, textOfMessage, System.currentTimeMillis(), null);
+        } else if (urlToImage != null && !urlToImage.isEmpty()) {
+            message = new Message(author, null, System.currentTimeMillis(), urlToImage);
         }
+        db.collection("messages")
+                .add(message)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        editTextMessage.setText("");
+                        recyclerViewMessages.scrollToPosition(adapter.getItemCount() - 1);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, "Сообщение не отправлено", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
@@ -180,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Uri downloadUri = task.getResult();
                                 if (downloadUri != null) {
-                                    Log.i("UrlTest", downloadUri.toString());
+                                    sendMessage(null, downloadUri.toString());
                                 }
                             } else {
 

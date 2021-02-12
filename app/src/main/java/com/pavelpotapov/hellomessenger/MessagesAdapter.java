@@ -3,10 +3,14 @@ package com.pavelpotapov.hellomessenger;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +41,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     @Override
     public void onBindViewHolder(@NonNull MessagesViewHolder holder, int position) {
-        holder.textViewAuthor.setText(messages.get(position).getAuthor());
-        holder.textViewTextOfMessage.setText(messages.get(position).getTextOfMessage());
+        Message message = messages.get(position);
+        String author = message.getAuthor();
+        String textOfMessage = message.getTextOfMessage();
+        String urlToMessage = message.getImageUrl();
+        holder.textViewAuthor.setText(author);
+        if (textOfMessage != null && !textOfMessage.isEmpty()) {
+            holder.textViewTextOfMessage.setText(textOfMessage);
+            holder.imageViewImage.setVisibility(View.GONE);
+        }
+        if (urlToMessage != null && !urlToMessage.isEmpty()) {
+            holder.imageViewImage.setVisibility(View.VISIBLE);
+            Picasso.get().load(urlToMessage).into(holder.imageViewImage);
+        }
     }
 
     @Override
@@ -50,11 +65,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         private TextView textViewAuthor;
         private TextView textViewTextOfMessage;
+        private ImageView imageViewImage;
 
         public MessagesViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewAuthor = itemView.findViewById(R.id.textViewAuthor);
             textViewTextOfMessage = itemView.findViewById(R.id.textViewTextOfMessage);
+            imageViewImage = itemView.findViewById(R.id.imageViewImage);
         }
     }
 }
